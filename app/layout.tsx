@@ -1,5 +1,7 @@
+import { AuthProvider } from '@/providers/auth-provider';
+import { ModalProvider } from '@/providers/modal-provider';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Onest } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import './globals.css';
 
 const onest = Onest({
@@ -20,7 +22,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${onest.className} antialiased`}>
-        {children}
+        <AuthProvider>
+          {children}
+          <ModalProvider />
+        </AuthProvider>
         <script src='https://kit.fontawesome.com/e55bf0d525.js' crossOrigin='anonymous' />
       </body>
     </html>

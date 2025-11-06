@@ -1,6 +1,11 @@
+'use client';
+
+import { useDialog } from '@/hooks/use-dialog';
 import Link from 'next/link';
 
 export default function Home() {
+  const { onOpen } = useDialog();
+
   return (
     <>
       {/* Navbar */}
@@ -22,7 +27,9 @@ export default function Home() {
             Privacy policy
           </Link>
         </div>
-        <button className='nav__button'>Sign In</button>
+        <button className='nav__button cursor-pointer' onClick={() => onOpen()}>
+          Sign In
+        </button>
       </nav>
 
       {/* Header */}
@@ -35,15 +42,16 @@ export default function Home() {
           </div>
           <h1 className='header__title'>
             Ultimate AI <br />
-            Summariser<img src='assets/bolt.svg' alt='' className='header__title__icon' />
+            Summariser
+            <img src='assets/bolt.svg' alt='' className='header__title__icon' />
           </h1>
           <p className='header__paragraph'>All-in-one platform to watch your favourite movies in minutes using AI.</p>
-          <a className='header__button'>
+          <button className='header__button' onClick={() => onOpen()}>
             <div className='header__button__iconWrapper'>
               <i className='fa-solid fa-play header__button__icon'></i>
             </div>
             <span className='header__button__text'>See how it works &nbsp;</span>
-          </a>
+          </button>
         </div>
         <svg
           className='header__svg'
@@ -60,7 +68,7 @@ export default function Home() {
 
       {/* Features */}
       <section id='features'>
-        <div className='container'>
+        <div className='section-container'>
           <div className='row features__row'>
             <h1 className='features__title'>The future of AI.</h1>
             <div className='features__para'>
@@ -128,7 +136,7 @@ export default function Home() {
 
       {/* Summary */}
       <section id='summary'>
-        <div className='container'>
+        <div className='section-container'>
           <div className='row summary__row'>
             <div className='summary__text'>
               <div className='summary__widget'>
@@ -154,7 +162,7 @@ export default function Home() {
 
       {/* Steps */}
       <section id='steps'>
-        <div className='container'>
+        <div className='section-container'>
           <div className='row steps__row'>
             <h2 className='steps__title'>So, how does it work?</h2>
             <div className='steps__list'>
@@ -188,7 +196,7 @@ export default function Home() {
 
       {/* Testmonials */}
       <section id='testimonials'>
-        <div className='container'>
+        <div className='section-container'>
           <div className='row testimonials__row'>
             <div className='testimonials__widget'>
               <span className='testimonials__widget__title'>Testimonials</span>
@@ -240,7 +248,7 @@ export default function Home() {
           >
             <path d='M0 85.662C240 29.1253 480 0.857 720 0.857C960 0.857 1200 29.1253 1440 85.662V0H0V85.662Z'></path>
           </svg>
-          <div className='container'>
+          <div className='section-container'>
             <div className='row cta__row'>
               <p className='cta__widget'>
                 <span className='cta__widget__logo'>HollywoodAI</span>
@@ -248,7 +256,7 @@ export default function Home() {
               </p>
               <h2 className='cta__title'>Start your free trial.</h2>
               <p className='cta__para'>Enjoy your favourite movies in minutes by letting AI do the work for you.</p>
-              <button className='cta__button'>
+              <button className='cta__button cursor-pointer' onClick={() => onOpen()}>
                 <span className='cta__button__text'>Join HollywoodAI</span>
                 <img src='assets/bolt.svg' alt='' className='cta__button__icon' />
               </button>

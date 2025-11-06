@@ -123,8 +123,9 @@
 
 /* Imported CSS from template */
 
-.container {
-  padding: 60px 0;
+.section-container {
+  padding: 60px 0 !important;
+  width: 100%;
 }
 
 .row {
@@ -143,7 +144,7 @@ nav {
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 999;
+  z-index: 10;
   background: white;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
 }
