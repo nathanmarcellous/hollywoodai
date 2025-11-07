@@ -16,12 +16,12 @@ import { FaUser } from 'react-icons/fa6';
 import { FcGoogle } from 'react-icons/fc';
 
 export const AuthModalContent = () => {
+  const router = useRouter();
   const { onClose } = useDialog();
+
   const [modalType, setModalType] = useState<'login' | 'signup' | 'forgotPassword'>('login');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const router = useRouter();
 
   const handleModalType = (type: 'login' | 'signup' | 'forgotPassword') => {
     setModalType(type);
@@ -34,7 +34,11 @@ export const AuthModalContent = () => {
       await signInWithEmailAndPassword(auth, email, password);
       setLoading(false);
       onClose();
-      router.push('/dashboard');
+      if (window.location.pathname === '/') {
+        router.push('/dashboard');
+      } else {
+        router.refresh();
+      }
     } catch (error: any) {
       setError(error.message);
       setLoading(false);
@@ -47,7 +51,11 @@ export const AuthModalContent = () => {
       await createUserWithEmailAndPassword(auth, email, password);
       setLoading(false);
       onClose();
-      router.push('/dashboard');
+      if (window.location.pathname === '/') {
+        router.push('/dashboard');
+      } else {
+        router.refresh();
+      }
     } catch (error: any) {
       setError(error.message);
       setLoading(false);
@@ -74,7 +82,11 @@ export const AuthModalContent = () => {
       await signInWithEmailAndPassword(auth, 'test@test.com', 'password123');
       setLoading(false);
       onClose();
-      router.push('/dashboard');
+      if (window.location.pathname === '/') {
+        router.push('/dashboard');
+      } else {
+        router.refresh();
+      }
     } catch (error: any) {
       setError(error.message);
       setLoading(false);
@@ -87,7 +99,11 @@ export const AuthModalContent = () => {
       await signInWithPopup(auth, new GoogleAuthProvider());
       setLoading(false);
       onClose();
-      router.push('/dashboard');
+      if (window.location.pathname === '/') {
+        router.push('/dashboard');
+      } else {
+        router.refresh();
+      }
     } catch (error: any) {
       setError(error.message);
       setLoading(false);
