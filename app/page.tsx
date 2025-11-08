@@ -4,7 +4,7 @@ import { useDialog } from '@/hooks/use-dialog';
 import Link from 'next/link';
 
 export default function Home() {
-  const { onOpen } = useDialog();
+  const { onOpen: handleOpenAuthModal } = useDialog();
 
   return (
     <>
@@ -27,7 +27,7 @@ export default function Home() {
             Privacy policy
           </Link>
         </div>
-        <button className='nav__button cursor-pointer' onClick={() => onOpen()}>
+        <button className='nav__button cursor-pointer' onClick={handleOpenAuthModal}>
           Sign In
         </button>
       </nav>
@@ -46,7 +46,7 @@ export default function Home() {
             <img src='assets/bolt.svg' alt='' className='header__title__icon' />
           </h1>
           <p className='header__paragraph'>All-in-one platform to watch your favourite movies in minutes using AI.</p>
-          <button className='header__button' onClick={() => onOpen()}>
+          <button className='header__button' onClick={handleOpenAuthModal}>
             <div className='header__button__iconWrapper'>
               <i className='fa-solid fa-play header__button__icon'></i>
             </div>
@@ -256,7 +256,7 @@ export default function Home() {
               </p>
               <h2 className='cta__title'>Start your free trial.</h2>
               <p className='cta__para'>Enjoy your favourite movies in minutes by letting AI do the work for you.</p>
-              <button className='cta__button cursor-pointer' onClick={() => onOpen()}>
+              <button className='cta__button cursor-pointer' onClick={handleOpenAuthModal}>
                 <span className='cta__button__text'>Join HollywoodAI</span>
                 <img src='assets/bolt.svg' alt='' className='cta__button__icon' />
               </button>

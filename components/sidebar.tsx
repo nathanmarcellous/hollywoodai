@@ -10,7 +10,7 @@ import { LogoutBtn } from './logout-btn';
 
 export const Sidebar = () => {
   return (
-    <div className='fixed top-0 left-0 z-50 w-[230px] h-screen border-r border-[#f1f3f4] bg-background py-6 flex flex-col gap-8'>
+    <div className='fixed top-0 left-0 z-50 w-[230px] h-screen border-r border-[#f1f3f4] bg-background py-6 md:flex flex-col gap-8 hidden'>
       <Image
         src='/assets/logo-dark.png'
         alt='logo'
