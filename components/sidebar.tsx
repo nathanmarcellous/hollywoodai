@@ -16,7 +16,7 @@ export const Sidebar = () => {
         alt='logo'
         width={140}
         height={40}
-        loading='lazy'
+        loading='eager'
         className='mx-6'
       />
       <div className='flex flex-col'>
