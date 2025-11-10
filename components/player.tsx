@@ -2,59 +2,99 @@
 
 import { Movie } from '@/types';
 import Image from 'next/image';
-import { FaBackward, FaForward, FaPlay } from 'react-icons/fa';
+import { FaBackward, FaForward, FaPause, FaPlay } from 'react-icons/fa';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
-import { useRef, useState, useEffect } from 'react';
-
-const audioApi = 'https://advanced-internship-api-production.up.railway.app/';
+import { AUDIO_API, formatTime } from '@/lib/utils';
 
 
 export const Player = ({ movie }: { movie: Movie }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
+  const playAnimationRef = useRef<number | null>(null);
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [duration, setDuration] = useState<number>(0);
+  const [timeProgress, setTimeProgress] = useState<number>(0);
 
   const onLoadedMetadata = () => {
     const audio = audioRef.current;
     if (!audio) return;
-  };
 
-  const updateProgress = (input: HTMLInputElement) => {
-    const min = Number(input.min) || 0;
-    const max = Number(input.max) || 100;
-    const value = Number(input.value);
-    const percent = ((value - min) * 100) / (max - min);
-    input.style.setProperty('--progress', `${percent}%`);
+    if (audio.duration !== undefined) {
+      setDuration(audio.duration);
 
-    console.log(percent);
+      if (sliderRef.current) {
+        sliderRef.current.max = audio.duration.toString();
+      }
+    }
   };
 
   const handlePlay = () => {
     setIsPlaying(!isPlaying);
   };
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.play();
-    } else {
-      audio.pause();
+  const handleForward = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime += 10;
+      updateProgress();
     }
-  }, [isPlaying, audioRef]);
-
-  useEffect(() => {
-    if (sliderRef.current) {
-      updateProgress(sliderRef.current);
-    }
-  }, [movie]);
-
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateProgress(event.currentTarget);
   };
 
+  const handleBackward = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime -= 10;
+      updateProgress();
+    }
+  };
+
+  const handleProgressChange = () => {
+    if (audioRef.current && sliderRef.current) {
+      const newTime = Number(sliderRef.current.value);
+      audioRef.current.currentTime = newTime;
+      setTimeProgress(newTime);
+      // if progress bar changes while audio is on pause
+      sliderRef.current.style.setProperty('--range-progress', `${(newTime / duration) * 100}%`);
+    }
+  };
+
+  const updateProgress = useCallback(() => {
+    if (audioRef.current && sliderRef.current && duration) {
+      const currentTime = audioRef.current.currentTime;
+      setTimeProgress(currentTime);
+      sliderRef.current.value = currentTime.toString();
+      sliderRef.current.style.setProperty('--range-progress', `${(currentTime / duration) * 100}%`);
+    }
+  }, [duration, setTimeProgress, audioRef, sliderRef]);
+
+  const startAnimation = useCallback(() => {
+    if (audioRef.current && sliderRef.current && duration) {
+      const animate = () => {
+        updateProgress();
+        playAnimationRef.current = requestAnimationFrame(animate);
+      };
+      playAnimationRef.current = requestAnimationFrame(animate);
+    }
+  }, [updateProgress, duration, audioRef, sliderRef]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      audioRef.current?.play();
+      startAnimation();
+    } else {
+      audioRef.current?.pause();
+      if (playAnimationRef.current !== null) {
+        cancelAnimationFrame(playAnimationRef.current);
+        playAnimationRef.current = null;
+      }
+      updateProgress(); // Ensure progress is updated immediately when paused
+    }
+    return () => {
+      if (playAnimationRef.current !== null) {
+        cancelAnimationFrame(playAnimationRef.current);
+      }
+    };
+  }, [isPlaying, startAnimation, updateProgress, audioRef]);
 
   return (
     <div className='fixed bottom-0 left-0 h-20 w-full bg-[#042330] z-50 px-10 flex items-center justify-between text-white'>
@@ -68,35 +108,34 @@ export const Player = ({ movie }: { movie: Movie }) => {
         </div>
       </div>
       <div className='flex items-center justify-center gap-3 w-[calc(100%/3)]'>
-        <button className='cursor-pointer'>
+        <button onClick={handleBackward} className='cursor-pointer'>
           <FaBackward />
         </button>
         <button
           onClick={handlePlay}
           className='w-10 h-10 bg-white rounded-full cursor-pointer text-black flex items-center justify-center'
         >
-          <FaPlay className='text-black' />
+          {isPlaying ? <FaPause className='text-black' /> : <FaPlay className='text-black' />}
         </button>
-        <button className='cursor-pointer'>
+        <button onClick={handleForward} className='cursor-pointer'>
           <FaForward />
         </button>
       </div>
       <div className='flex gap-3 w-[calc(100%/3)] items-center'>
-        <span className='w-8 text-[14px] mr-2'>00:00</span>
+        <span className='w-8 text-[14px] mr-2'>{formatTime(timeProgress)}</span>
         <input
           ref={sliderRef}
           type='range'
           min={0}
-          max={100}
           defaultValue={0}
-          onChange={handleInput}
+          onChange={handleProgressChange}
           className='max-w-[300px] w-full h-0.5 cursor-pointer appearance-none'
         />
-        <span className='w-8 text-[14px]'>03:34</span>
+        <span className='w-8 text-[14px]'>{formatTime(duration)}</span>
       </div>
       <audio
         ref={audioRef}
-        src={`${audioApi}${movie.audioLink}`}
+        src={`${AUDIO_API}${movie.audioLink}`}
         onLoadedMetadata={onLoadedMetadata}
         className='hidden'
       />

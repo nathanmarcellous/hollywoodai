@@ -9,8 +9,7 @@ import { FaRegClock, FaRegStar, FaMicrophone, FaRegCalendar, FaBookmark, FaRegBo
 import { Movie } from '@/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useDialog } from '@/hooks/use-dialog';
-
-const audioApi = 'https://advanced-internship-api-production.up.railway.app/';
+import { AUDIO_API, formatTime } from '@/lib/utils';
 
 export default function MoviePage() {
   const router = useRouter();
@@ -22,23 +21,26 @@ export default function MoviePage() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [movie, setMovie] = useState<Movie | null>(null);
-  const [duration, setDuration] = useState<string>('00:00');
+  const [duration, setDuration] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   const onLoadedMetadata = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const seconds = Math.floor(audio.duration || 0);
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    setDuration(`${mins}:${secs.toString().padStart(2, '0')}`);
+    if (audio.duration !== undefined) {
+      setDuration(audio.duration);
+    }
   };
 
   useEffect(() => {
     const fetchMovie = async () => {
-      const { data } = await axios.get(`https://advanced-internship-api-production.up.railway.app/movies/${id}`);
-      setMovie(data.data);
-      console.log(data.data);
+      try {
+        const { data } = await axios.get(`https://advanced-internship-api-production.up.railway.app/movies/${id}`);
+        setMovie(data.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchMovie();
@@ -61,7 +63,7 @@ export default function MoviePage() {
   if (!movie) return <div>Loading...</div>;
 
   return (
-    <div className='p-10 flex'>
+    <div className='p-10 flex flex-col-reverse lg:flex-row items-center'>
       <div className='flex-1'>
         <h1 className='text-[36px] font-semibold mb-1'>{movie.title}</h1>
         <p className='mb-4 font-normal text-[rgba(64,70,84,.7)]'>{movie.director}</p>
@@ -74,7 +76,7 @@ export default function MoviePage() {
             </span>
             <span className='flex items-center w-1/2 text-[14px] gap-1.5'>
               <FaRegClock />
-              <span>{duration}</span>
+              <span>{formatTime(duration)}</span>
             </span>
             <div className='flex items-center w-1/2 text-[14px] gap-1.5'>
               <FaMicrophone />
@@ -87,7 +89,7 @@ export default function MoviePage() {
           </div>
           <audio
             ref={audioRef}
-            src={`${audioApi}${movie.audioLink}`}
+            src={`${AUDIO_API}${movie.audioLink}`}
             onLoadedMetadata={onLoadedMetadata}
             className='hidden'
           />
@@ -113,7 +115,7 @@ export default function MoviePage() {
         </div>
         <p>{movie.movieDescription}</p>
       </div>
-      <figure className='relative aspect-2/3 w-[200px] min-w-[200px] ml-8 overflow-hidden self-start'>
+      <figure className='relative aspect-2/3 w-[200px] min-w-[200px] ml-8 overflow-hidden lg:self-start'>
         <Image
           src={movie.imageLink}
           alt={movie.title}

@@ -6,22 +6,20 @@ import { useRef, useState } from 'react';
 import { FaRegClock, FaRegStar } from 'react-icons/fa';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { AUDIO_API, formatTime } from '@/lib/utils';
 import { Movie } from '@/types';
-
-const audioApi = 'https://advanced-internship-api-production.up.railway.app/';
 
 export const MovieCard = ({ movie }: { movie: Movie }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [duration, setDuration] = useState<string>('00:00');
+  const [duration, setDuration] = useState<number>(0);
 
   const onLoadedMetadata = () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const seconds = Math.floor(audio.duration || 0);
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    setDuration(`${mins}:${secs.toString().padStart(2, '0')}`);
+    if (audio.duration !== undefined) {
+      setDuration(audio.duration);
+    }
   };
 
   return (
@@ -42,7 +40,7 @@ export const MovieCard = ({ movie }: { movie: Movie }) => {
       </figure>
       <audio
         ref={audioRef}
-        src={`${audioApi}${movie.audioLink}`}
+        src={`${AUDIO_API}${movie.audioLink}`}
         onLoadedMetadata={onLoadedMetadata}
         className='hidden'
       />
@@ -53,7 +51,7 @@ export const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className='flex items-center gap-2'>
           <span className='text-[12px] text-[rgba(64,70,84,.7)] flex items-center gap-1'>
             <FaRegClock />
-            {duration}
+            {formatTime(duration)}
           </span>
           <span className='text-[12px] text-[rgba(64,70,84,.7)] flex items-center gap-1'>
             <FaRegStar />

@@ -6,7 +6,7 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
     <>
       <Sidebar />
 
-      <div className='md:ml-[230px] '>
+      <div className='lg:ml-[230px] '>
         <SearchBar />
         {children}
       </div>
