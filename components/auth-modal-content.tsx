@@ -2,6 +2,7 @@
 
 import { auth } from '@/firebase';
 import { useDialog } from '@/hooks/use-dialog';
+import { useSidebar } from '@/hooks/use-sidebar';
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -18,6 +19,7 @@ import { FcGoogle } from 'react-icons/fc';
 export const AuthModalContent = () => {
   const router = useRouter();
   const { onClose } = useDialog();
+  const { onClose: handleSidebarClose } = useSidebar()
 
   const [modalType, setModalType] = useState<'login' | 'signup' | 'forgotPassword'>('login');
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +36,7 @@ export const AuthModalContent = () => {
       await signInWithEmailAndPassword(auth, email, password);
       setLoading(false);
       onClose();
+      handleSidebarClose();
       if (window.location.pathname === '/') {
         router.push('/dashboard');
       } else {
@@ -51,6 +54,7 @@ export const AuthModalContent = () => {
       await createUserWithEmailAndPassword(auth, email, password);
       setLoading(false);
       onClose();
+      handleSidebarClose();
       if (window.location.pathname === '/') {
         router.push('/dashboard');
       } else {
@@ -82,6 +86,7 @@ export const AuthModalContent = () => {
       await signInWithEmailAndPassword(auth, 'test@test.com', 'password123');
       setLoading(false);
       onClose();
+      handleSidebarClose();
       if (window.location.pathname === '/') {
         router.push('/dashboard');
       } else {
@@ -99,6 +104,7 @@ export const AuthModalContent = () => {
       await signInWithPopup(auth, new GoogleAuthProvider());
       setLoading(false);
       onClose();
+      handleSidebarClose();
       if (window.location.pathname === '/') {
         router.push('/dashboard');
       } else {

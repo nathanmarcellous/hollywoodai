@@ -4,9 +4,12 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useSidebar } from '@/hooks/use-sidebar';
 
 export const SearchBar = () => {
   const [search, setSearch] = useState('');
+
+  const { onOpen: handleOpenSidebar } = useSidebar();
 
   return (
     <div className='w-full h-20 border-b border-[#f1f3f5]'>
@@ -17,7 +20,7 @@ export const SearchBar = () => {
             className='outline-none border-none w-full h-full px-4 py-2 pl-10 placeholder:text-[#667085] placeholder:text-[13px] placeholder:font-medium font-medium text-[13px]'
             placeholder='Search for movies...'
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={e => setSearch(e.target.value)}
           />
           <FaMagnifyingGlass size={16} className='absolute left-4 top-1/2 -translate-y-1/2 ' />
         </div>
@@ -33,7 +36,7 @@ export const SearchBar = () => {
             <p className='text-[#667085]'>Please try again.</p>
           </div>
         </div>
-        <RxHamburgerMenu size={24} className='text-[#1f2328]' />
+        <RxHamburgerMenu size={32} className='cursor-pointer lg:hidden block ml-5' onClick={handleOpenSidebar} />
       </div>
     </div>
   );

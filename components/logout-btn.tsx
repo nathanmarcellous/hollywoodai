@@ -6,7 +6,11 @@ import { useDialog } from '@/hooks/use-dialog';
 import { signOut } from 'firebase/auth';
 import { MdLogin, MdLogout } from 'react-icons/md';
 
-export const LogoutBtn = () => {
+type Props = {
+  onClick?: () => void;
+};
+
+export const LogoutBtn = ({ onClick }: Props) => {
   const { user } = useAuth();
   const { onOpen: handleOpenAuthModal } = useDialog();
 
@@ -21,7 +25,14 @@ export const LogoutBtn = () => {
   return (
     <div
       className='my-0.5 mx-3 p-3 rounded-lg font-medium text-[14px] text-[#565b67] flex items-center gap-2 hover:bg-[#3205800b] hover:text-[#320580] transition-all duration-100 cursor-pointer'
-      onClick={user ? handleLogout : handleOpenAuthModal}
+      onClick={() => {
+        if (user) {
+          handleLogout();
+          onClick?.();
+        } else {
+          handleOpenAuthModal();
+        }
+      }}
     >
       {user ? <MdLogout size={15} /> : <MdLogin size={15} />}
       {user ? 'Logout' : 'Login'}

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { AuthModal } from '@/components/auth-modal';
 import { useMountedState } from 'react-use';
