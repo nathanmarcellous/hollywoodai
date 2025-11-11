@@ -7,7 +7,6 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 
 import { AUDIO_API, formatTime } from '@/lib/utils';
 
-
 export const Player = ({ movie }: { movie: Movie }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const sliderRef = useRef<HTMLInputElement>(null);
@@ -97,8 +96,8 @@ export const Player = ({ movie }: { movie: Movie }) => {
   }, [isPlaying, startAnimation, updateProgress, audioRef]);
 
   return (
-    <div className='fixed bottom-0 left-0 h-20 w-full bg-[#042330] z-50 px-10 flex items-center justify-between text-white'>
-      <div className='flex gap-3 w-[calc(100%/3)]'>
+    <div className='fixed bottom-0 left-0 h-[180px] lg:h-20 w-full bg-[#042330] z-50 lg:px-10 py-4 px-6 flex flex-col lg:flex-row items-center justify-between text-white'>
+      <div className='flex gap-3 w-full lg:w-[calc(100%/3)] justify-center lg:justify-start items-center'>
         <figure className='flex max-h-12 h-12 min-h-12 w-8 relative'>
           <Image src={movie.imageLink} alt={movie.title} fill className='object-cover w-full h-full' />
         </figure>
@@ -107,7 +106,7 @@ export const Player = ({ movie }: { movie: Movie }) => {
           <p className='text-[#bac8ce]'>{movie.director}</p>
         </div>
       </div>
-      <div className='flex items-center justify-center gap-3 w-[calc(100%/3)]'>
+      <div className='flex gap-3 w-full lg:w-[calc(100%/3)] justify-center'>
         <button onClick={handleBackward} className='cursor-pointer'>
           <FaBackward />
         </button>
@@ -121,7 +120,7 @@ export const Player = ({ movie }: { movie: Movie }) => {
           <FaForward />
         </button>
       </div>
-      <div className='flex gap-3 w-[calc(100%/3)] items-center'>
+      <div className='flex gap-3 w-full lg:w-[calc(100%/3)] justify-center lg:justify-start items-center'>
         <span className='w-8 text-[14px] mr-2'>{formatTime(timeProgress)}</span>
         <input
           ref={sliderRef}

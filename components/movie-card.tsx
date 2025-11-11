@@ -8,10 +8,13 @@ import { FaRegClock, FaRegStar } from 'react-icons/fa';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AUDIO_API, formatTime } from '@/lib/utils';
 import { Movie } from '@/types';
+import { useAuth } from '@/hooks/use-auth';
 
 export const MovieCard = ({ movie }: { movie: Movie }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [duration, setDuration] = useState<number>(0);
+
+  const { isPremium } = useAuth();
 
   const onLoadedMetadata = () => {
     const audio = audioRef.current;
@@ -32,7 +35,7 @@ export const MovieCard = ({ movie }: { movie: Movie }) => {
           fill
           sizes='(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw'
         />
-        {movie.subscriptionRequired && (
+        {movie.subscriptionRequired && !isPremium && (
           <div className='absolute -top-2.5 bg-[rgba(50,5,128,.767)] rounded-xl text-[10px] font-light left-1/2 translate-x-[-50%] text-white z-20 py-[3px] px-2.5'>
             Premium
           </div>
