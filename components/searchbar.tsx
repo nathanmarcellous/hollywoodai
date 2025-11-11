@@ -13,31 +13,25 @@ import { SearchbarItem } from './searchbar-item';
 export const SearchBar = () => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const { onOpen: handleOpenSidebar } = useSidebar();
 
   useDebounce(
     async () => {
-      if (!search) {
-        setResults([]);
-        setLoading(false);
-        return;
-      }
+      if (!search) return;
 
-      const fetchResults = async () => {
-        setLoading(true);
-        try {
-          const { data } = await axios.get(
-            `https://advanced-internship-api-production.up.railway.app/movies?search=${search}`
-          );
-          setResults(data.data);
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchResults();
+      try {
+        const { data } = await axios.get(
+          `https://advanced-internship-api-production.up.railway.app/movies?search=${search}`
+        );
+        setResults(data.data);
+      } catch (error) {
+        console.error(error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
     },
     300,
     [search]
@@ -52,7 +46,18 @@ export const SearchBar = () => {
             className='outline-none border-none w-full h-full px-4 py-2 pl-10 placeholder:text-[#667085] placeholder:text-[13px] placeholder:font-medium font-medium text-[13px]'
             placeholder='Search for movies...'
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => {
+              const { value } = e.target;
+              setSearch(value);
+
+              if (value) {
+                setLoading(true);
+                setResults([]);
+              } else {
+                setLoading(false);
+                setResults([]);
+              }
+            }}
           />
           <FaMagnifyingGlass size={16} className='absolute left-4 top-1/2 -translate-y-1/2 ' />
         </div>
