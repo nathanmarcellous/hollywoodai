@@ -4,12 +4,14 @@ import { Check, Loader2 } from 'lucide-react';
 
 import { FAQSection } from '@/components/faq';
 import { loadCheckout } from '@/stripe/stripePayment';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 export default function Plans() {
-  const { user, isPremium } = useAuth();
+  const { user, isPremium, loading } = useAuth();
 
+  const router = useRouter();
 
   const [loadingPremium, setLoadingPremium] = useState(false);
   const [loadingVIP, setLoadingVIP] = useState(false);
@@ -40,9 +42,11 @@ export default function Plans() {
     }
   };
 
-  if (user && isPremium) {
-    console.log(isPremium);
-  }
+  useEffect(() => {
+    if (loading) return;
+    if (!user || !isPremium) return;
+    router.replace('/settings');
+  }, [user, isPremium, router, loading]);
 
   return (
     <>

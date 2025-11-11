@@ -1,10 +1,11 @@
 'use client';
 
 import { Player } from '@/components/player';
+import { useAuth } from '@/hooks/use-auth';
 import { Movie } from '@/types';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function PlayerPage() {
@@ -12,6 +13,8 @@ export default function PlayerPage() {
 
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isPremium, loading: authLoading } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -27,6 +30,17 @@ export default function PlayerPage() {
 
     fetchMovie();
   }, [id]);
+
+  useEffect(() => {
+    if (!movie || authLoading) return;
+
+    const requiresSubscription = Boolean(movie.subscriptionRequired);
+    const hasActiveSubscription = Boolean(isPremium);
+
+    if (requiresSubscription && !hasActiveSubscription) {
+      router.replace('/plans');
+    }
+  }, [movie, isPremium, authLoading, router]);
 
   if (loading)
     return (

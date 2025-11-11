@@ -12,11 +12,13 @@ import { useDialog } from '@/hooks/use-dialog';
 import { AUDIO_API, formatTime } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { isFavorite, toggleFavorite } from '@/firebase/favorites';
+
 export default function MoviePage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
 
-  const { user } = useAuth();
+  const { user, isPremium } = useAuth();
   const { onOpen: handleOpenAuthModal } = useDialog();
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -24,6 +26,8 @@ export default function MoviePage() {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [duration, setDuration] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [favorited, setFavorited] = useState(false);
+  const [checkingFavorite, setCheckingFavorite] = useState(true);
 
   const onLoadedMetadata = () => {
     const audio = audioRef.current;
@@ -48,13 +52,59 @@ export default function MoviePage() {
     fetchMovie();
   }, [id]);
 
+  useEffect(() => {
+    const checkFavorite = async () => {
+      if (!movie || !user) {
+        setCheckingFavorite(false);
+        return;
+      }
+
+      try {
+        const result = await isFavorite(movie);
+        setFavorited(result || false);
+      } catch (error) {
+        console.error('Error checking favorite:', error);
+      } finally {
+        setCheckingFavorite(false);
+      }
+    };
+
+    checkFavorite();
+  }, [movie, user]);
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      handleOpenAuthModal();
+      return;
+    }
+
+    if (!movie) return;
+
+    try {
+      await toggleFavorite(movie);
+      setFavorited(!favorited);
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
   const handleSummarise = () => {
     if (!user) {
       handleOpenAuthModal();
       return;
     }
 
-    if (movie?.subscriptionRequired) {
+    const requiresSubscription = Boolean(movie?.subscriptionRequired);
+    const hasActiveSubscription = Boolean(isPremium);
+
+    console.log(requiresSubscription, hasActiveSubscription);
+
+    if (requiresSubscription && hasActiveSubscription) {
+      router.push(`/player/${id}`);
+      return;
+    }
+
+    if (requiresSubscription && !hasActiveSubscription) {
       router.push('/plans');
       return;
     }
@@ -111,11 +161,12 @@ export default function MoviePage() {
       </div>
     );
 
-  if (!movie) return (
-    <div className='p-10 flex items-center justify-center'>
-      <p className='text-2xl font-semibold'>No movie found.</p>
-    </div>
-  )
+  if (!movie)
+    return (
+      <div className='p-10 flex items-center justify-center'>
+        <p className='text-2xl font-semibold'>No movie found.</p>
+      </div>
+    );
 
   return (
     <div className='p-10 flex flex-col-reverse lg:flex-row items-center'>
@@ -155,9 +206,21 @@ export default function MoviePage() {
           Summarise
           <Image src='/assets/bolt.svg' alt='play' width={12} height={12} className='ml-2' />
         </button>
-        <button className='flex items-center cursor-pointer text-[18px] text-[#0365f2] font-medium gap-2 mb-10'>
-          <FaRegBookmark />
-          Add to Favorites
+        <button
+          onClick={handleToggleFavorite}
+          className='flex items-center cursor-pointer text-[18px] text-[#0365f2] font-medium gap-2 mb-10'
+        >
+          {favorited ? (
+            <>
+              <FaBookmark />
+              Remove from Favorites{' '}
+            </>
+          ) : (
+            <>
+              <FaRegBookmark />
+              Add to Favorites{' '}
+            </>
+          )}
         </button>
         <h2 className='text-[18px] font-semibold mb-4'>What's it about?</h2>
         <div className='flex flex-wrap gap-4 mb-4'>

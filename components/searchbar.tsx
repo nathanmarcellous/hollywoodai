@@ -36,7 +36,14 @@ export const SearchBar = () => {
             <p className='text-[#667085]'>Please try again.</p>
           </div>
         </div>
-        <RxHamburgerMenu size={32} className='cursor-pointer lg:hidden block ml-5' onClick={handleOpenSidebar} />
+        <RxHamburgerMenu
+          size={32}
+          className='cursor-pointer lg:invisible visible ml-5'
+          onClick={() => {
+            handleOpenSidebar();
+            console.log('clicked');
+          }}
+        />
       </div>
     </div>
   );
