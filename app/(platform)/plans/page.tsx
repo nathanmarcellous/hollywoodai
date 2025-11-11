@@ -1,8 +1,49 @@
-import { Check } from 'lucide-react';
+'use client';
+
+import { Check, Loader2 } from 'lucide-react';
 
 import { FAQSection } from '@/components/faq';
+import { loadCheckout } from '@/stripe/stripePayment';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function Plans() {
+  const { user, isPremium } = useAuth();
+
+
+  const [loadingPremium, setLoadingPremium] = useState(false);
+  const [loadingVIP, setLoadingVIP] = useState(false);
+
+  const handlePremium = async () => {
+    const priceId = 'price_1SS4Om0A1GKKMw9raDZVD1vI';
+
+    try {
+      setLoadingPremium(true);
+      await loadCheckout(priceId);
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      setLoadingPremium(false);
+    }
+  };
+
+  const handleVIP = async () => {
+    const priceId = 'price_1SS4PC0A1GKKMw9rm03Vo8db';
+
+    try {
+      setLoadingVIP(true);
+      await loadCheckout(priceId);
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      setLoadingVIP(false);
+    }
+  };
+
+  if (user && isPremium) {
+    console.log(isPremium);
+  }
+
   return (
     <>
       <div className='w-full border-b border-[#f1f3f4]'>
@@ -55,8 +96,11 @@ export default function Plans() {
                 <p className='text-[14px] md:text-base'>2 Supported Devices</p>
               </div>
             </div>
-            <button className='mt-[60px] text-[14px] font-medium py-2 px-4 rounded-4xl bg-[#320580] text-white flex items-center justify-center w-full h-11 shadow-[0 2px 6px rgba(0, 0,0,.1)]'>
-              Choose Plan
+            <button
+              onClick={handlePremium}
+              className='mt-[60px] cursor-pointer text-[14px] font-medium py-2 px-4 rounded-4xl bg-[#320580] text-white flex items-center justify-center w-full h-11 shadow-[0 2px 6px rgba(0, 0,0,.1)]'
+            >
+              {loadingPremium ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Choose Plan'}
             </button>
           </div>
 
@@ -99,13 +143,16 @@ export default function Plans() {
                 <p className='text-[14px] md:text-base'>3 Supported Devices</p>
               </div>
             </div>
-            <button className='mt-[60px] text-[14px] font-medium py-2 px-4 rounded-4xl bg-[#320580] text-white flex items-center justify-center w-full h-11 shadow-[0 2px 6px rgba(0, 0,0,.1)]'>
-              Choose Plan
+            <button
+              onClick={handleVIP}
+              className='mt-[60px] cursor-pointer text-[14px] font-medium py-2 px-4 rounded-4xl bg-[#320580] text-white flex items-center justify-center w-full h-11 shadow-[0 2px 6px rgba(0, 0,0,.1)]'
+            >
+              {loadingVIP ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Choose Plan'}
             </button>
           </div>
         </div>
       </div>
-      
+
       <div className='max-w-[1400px] mx-auto px-8 '>
         <FAQSection />
       </div>

@@ -1,12 +1,39 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/use-auth';
 import { useDialog } from '@/hooks/use-dialog';
+import { loadPortal } from '@/stripe/stripePayment';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Settings() {
-  const { user } = useAuth();
+  const { user, isPremium, loading } = useAuth();
   const { onOpen: handleOpenAuthModal } = useDialog();
+
+  const handleManageSubscription = async () => {
+    await loadPortal();
+  };
+
+  if (loading) {
+    return (
+      <div className='py-10 px-8'>
+        <h1 className='text-[32px] font-bold border-b border-[#e1e7ea] pb-4 mb-8'>Settings</h1>
+
+        <>
+          <div className='flex flex-col gap-2 pb-6 mb-8 border-b border-[#e1e7ea]'>
+            <h2 className='text-[18px] font-semibold'>Your Subscription Plan</h2>
+            <Skeleton className='h-5 w-20 rounded-xs' />
+            <Skeleton className='h-12 w-36 rounded-md' />
+          </div>
+          <div className='flex flex-col gap-2 pb-6 mb-8 border-b border-[#e1e7ea]'>
+            <h2 className='text-[18px] font-semibold'>Email</h2>
+            <Skeleton className='h-5 w-40 rounded-xs' />
+          </div>
+        </>
+      </div>
+    );
+  }
 
   return (
     <div className='py-10 px-8'>
@@ -15,8 +42,28 @@ export default function Settings() {
       {user ? (
         <>
           <div className='flex flex-col gap-2 pb-6 mb-8 border-b border-[#e1e7ea]'>
+            <h2 className='text-[18px] font-semibold'>Your Subscription Plan</h2>
+            <p>{isPremium ? isPremium : 'Basic'}</p>
+            {isPremium ? (
+              <button
+                onClick={handleManageSubscription}
+                className='flex items-center justify-center cursor-pointer text-[14px] bg-[#320580] rounded-md py-3 px-4 w-fit text-white'
+              >
+                Manage Subscription
+                <Image src='/assets/bolt.svg' alt='play' width={12} height={12} className='ml-2' />
+              </button>
+            ) : (
+              <Link href='/plans'>
+                <button className='flex items-center justify-center cursor-pointer text-[14px] bg-[#320580] rounded-md py-3 px-4 w-fit text-white'>
+                  Upgrade
+                  <Image src='/assets/bolt.svg' alt='play' width={12} height={12} className='ml-2' />
+                </button>
+              </Link>
+            )}
+          </div>
+          <div className='flex flex-col gap-2 pb-6 mb-8 border-b border-[#e1e7ea]'>
             <h2 className='text-[18px] font-semibold'>Email</h2>
-            <p className='text-[rgba(64,70,84,.7)] text-[14px]'>{user.email}</p>
+            <p>{user.email}</p>
           </div>
         </>
       ) : (
