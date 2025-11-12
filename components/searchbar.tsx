@@ -63,7 +63,7 @@ export const SearchBar = () => {
         </div>
         <div
           className={cn(
-            'absolute left-8 top-20 w-full max-w-[440px] z-10 shadow-[0_0_6px_0_rgba(0,0,0,.14)] rounded-[20px] max-h-[440px] border border-[#e1e7ea] bg-background',
+            'absolute left-8 top-20 w-full max-w-[440px] z-10 shadow-[0_0_6px_0_rgba(0,0,0,.14)] rounded-[20px] max-h-[440px] border border-[#e1e7ea] bg-background pr-4',
             search ? 'block' : 'hidden'
           )}
         >

@@ -7,9 +7,11 @@ import { loadCheckout } from '@/stripe/stripePayment';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
+import { useDialog } from '@/hooks/use-dialog';
 
 export default function Plans() {
   const { user, isPremium, loading } = useAuth();
+  const { onOpen: handleOpenAuthModal } = useDialog();
 
   const router = useRouter();
 
@@ -17,28 +19,36 @@ export default function Plans() {
   const [loadingVIP, setLoadingVIP] = useState(false);
 
   const handlePremium = async () => {
+    if (!user) {
+      handleOpenAuthModal();
+      return;
+    }
+
     const priceId = 'price_1SS4Om0A1GKKMw9raDZVD1vI';
 
     try {
       setLoadingPremium(true);
       await loadCheckout(priceId);
     } catch (error: any) {
-      console.error(error);
-    } finally {
       setLoadingPremium(false);
+      console.error(error);
     }
   };
 
   const handleVIP = async () => {
+    if (!user) {
+      handleOpenAuthModal();
+      return;
+    }
+
     const priceId = 'price_1SS4PC0A1GKKMw9rm03Vo8db';
 
     try {
       setLoadingVIP(true);
       await loadCheckout(priceId);
     } catch (error: any) {
-      console.error(error);
-    } finally {
       setLoadingVIP(false);
+      console.error(error);
     }
   };
 

@@ -52,7 +52,6 @@ export const Player = ({ movie }: { movie: Movie }) => {
       const newTime = Number(sliderRef.current.value);
       audioRef.current.currentTime = newTime;
       setTimeProgress(newTime);
-      // if progress bar changes while audio is on pause
       sliderRef.current.style.setProperty('--range-progress', `${(newTime / duration) * 100}%`);
     }
   };
@@ -86,7 +85,7 @@ export const Player = ({ movie }: { movie: Movie }) => {
         cancelAnimationFrame(playAnimationRef.current);
         playAnimationRef.current = null;
       }
-      updateProgress(); // Ensure progress is updated immediately when paused
+      updateProgress();
     }
     return () => {
       if (playAnimationRef.current !== null) {
